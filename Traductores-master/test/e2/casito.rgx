@@ -1,0 +1,10 @@
+program
+begin
+if a then
+if 5 then
+write "holi"
+else
+x=5;
+if 98 then
+x=9
+end

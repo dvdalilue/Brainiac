@@ -1,0 +1,132 @@
+Gabriela Limonta 10-10385
+John Delgado 10-10196
+
+Aqui se presenta la gramatica que se utilizo para generar el AST.
+
+           Programa->'program' Instruccion                                { result = Programa::new(val[1])                         }
+                   ;
+        Instruccion->'id' '=' Expresion                                   { result = Asignacion::new(val[0], val[2])               }
+                   | 'begin' Declaraciones Instrucciones 'end'            { result = Bloque::new(val[1], val[2])                   }
+                   | 'read' 'id'                                          { result = Read::new(val[1])                             }
+                   | 'write' ElementosSalida                              { result = Write::new(val[1])                            }
+                   | 'writeln' ElementosSalida                            { result = Writeln::new(val[1])                          }
+                   | 'if' Expresion 'then' Instruccion 'else' Instruccion { result = Condicional_Else::new(val[1], val[3], val[5]) }
+                   | 'if' Expresion 'then' Instruccion                    { result = Condicional_If::new(val[1], val[3])           }
+                   | 'case' Expresion 'of' Casos 'end'                    { result = Case::new(val[0], val[3])                     }
+                   | 'for' 'id' 'in' Expresion 'do' Instruccion           { result = Iteracion_Det::new(val[1], val[3], val[5])    }
+                   | 'while' Expresion 'do' Instruccion                   { result = Iteracion_Indet::new(val[1], val[3])          }
+                   ;
+              Casos->Caso                                                 { result = [val[0]]                                      }
+                   | Casos ';' Caso                                       { result = val[0] + [val[2]]                             }
+                   ;
+               Caso->Expresion '->' Instruccion                           { result = Caso::new(val[0], val[2])                     }
+                   ;
+      Declaraciones->'declare' LDeclaraciones                             { result = Declaraciones::new(val[1])                    }
+                   |                                                      { result = Declaraciones::new([])                        }
+                   ;
+     LDeclaraciones->Declaracion                                          { result = [val[0]]                                      }
+                   | LDeclaraciones ';' Declaracion                       { result = val[0] + [val[2]]                             }
+                   ;
+        Declaracion->Variables 'as' Tipo                                  { result = Declaracion::new(val[0], val[2])              }
+                   ;
+               Tipo->'int'                                                { result = val[0]                                        }
+                   | 'bool'                                               { result = val[0]                                        }
+                   | 'range'                                              { result = val[0]                                        }
+                   ;
+          Variables->Variables ',' 'id'                                   { result = val[0] + [val[2]]                             }
+                   | 'id'                                                 { result = [val[0]]                                      }
+                   ;
+      Instrucciones->Instruccion                                          { result = [val[0]]                                      }
+                   | Instrucciones ';' Instruccion                        { result = val[0] + [val[2]]                             }
+                   ;
+    ElementosSalida->ElementoSalida                                       { result = [val[0]]                                      }
+                   | ElementosSalida ',' ElementoSalida                   { result = val[0] + [val[2]]                             }
+                   ;
+     ElementoSalida->'str'                                                { result = val[0]                                        }
+                   | Expresion                                            { result = val[0]                                        }
+                   ;
+          Expresion->'num'                                                { result = Entero::new(val[0])                           }
+                   | 'true'                                               { result = True::new()                                   }
+                   | 'false'                                              { result = False::new()                                  }
+                   | 'id'                                                 { result = Variable::new(val[0])                         }
+                   | 'bottom' '(' Expresion ')'                           { result = Funcion_Bottom::new(val[2])                   }
+                   | 'length' '(' Expresion ')'                           { result = Funcion_Length::new(val[2])                   }
+                   | 'rtoi'   '(' Expresion ')'                           { result = Funcion_Rtoi::new(val[2])                     }
+                   | 'top'    '(' Expresion ')'                           { result = Funcion_Top::new(val[2])                      }
+                   | Expresion '%'   Expresion                            { result = Modulo::new(val[0], val[2])                   }
+                   | Expresion '*'   Expresion                            { result = Multiplicacion::new(val[0], val[2])           }
+                   | Expresion '+'   Expresion                            { result = Suma::new(val[0], val[2])                     }
+                   | Expresion '-'   Expresion                            { result = Resta::new(val[0], val[2])                    }
+                   | Expresion '..'  Expresion                            { result = Construccion::new(val[0], val[2])             }
+                   | Expresion '/'   Expresion                            { result = Division::new(val[0], val[2])                 }
+                   | Expresion '/='  Expresion                            { result = Desigual::new(val[0], val[2])                 }
+                   | Expresion '<'   Expresion                            { result = Menor_Que::new(val[0], val[2])                }
+                   | Expresion '<='  Expresion                            { result = Menor_Igual_Que::new(val[0], val[2])          }
+                   | Expresion '<>'  Expresion                            { result = Interseccion::new(val[0], val[2])             }
+                   | Expresion '=='  Expresion                            { result = Igual::new(val[0], val[2])                    }
+                   | Expresion '>'   Expresion                            { result = Mayor_Que::new(val[0], val[2])                }
+                   | Expresion '>='  Expresion                            { result = Mayor_Igual_Que::new(val[0], val[2])          }
+                   | Expresion '>>'  Expresion                            { result = Pertenece::new(val[0], val[2])                }
+                   | Expresion 'and' Expresion                            { result = And::new(val[0], val[2])                      }
+                   | Expresion 'or'  Expresion                            { result = Or::new(val[0], val[2])                       }
+                   | 'not' Expresion                                      { result = Not::new(val[1])                              }
+                   | '-'   Expresion =UMINUS                              { result = Menos_Unario::new(val[1])                     }
+                   | '(' Expresion ')'                                    { result = val[1]                                        }
+                   ;
+
+Para mayor comodidad y legibilidad utilizamos las palabras y simbolos
+del lenguaje en vez de escribir allí los tokens. A continuacion se
+presenta a que token corresponde cada palabra reservada y simbolo:
+
+        '('       corresponde a: 'TkAbreParentesis'
+        ')'       corresponde a: 'TkCierraParentesis'
+        ','       corresponde a: 'TkComa'
+        '/='      corresponde a: 'TkDesigual'
+        '/'       corresponde a: 'TkDivision'
+        '..'      corresponde a: 'TkDosPuntos'
+        '->'      corresponde a: 'TkFlecha'
+        'id'      corresponde a: 'TkId'
+        '=='      corresponde a: 'TkIgual'
+        '<>'      corresponde a: 'TkInterseccion'
+        '>='      corresponde a: 'TkMayorIgualQue'
+        '>'       corresponde a: 'TkMayorQue'
+        '<='      corresponde a: 'TkMenorIgualQue'
+        '<'       corresponde a: 'TkMenorQue'
+        '%'       corresponde a: 'TkModulo'
+        '*'       corresponde a: 'TkMultiplicacion'
+        'num'     corresponde a: 'TkNum'
+        '>>'      corresponde a: 'TkPertenece'
+        ';'       corresponde a: 'TkPuntoYComa'
+        '-'       corresponde a: 'TkResta'
+        'str'     corresponde a: 'TkString'
+        '+'       corresponde a: 'TkSuma'
+        '='       corresponde a: 'TkAsignacion'
+        'and'     corresponde a: 'TkAnd'
+        'as'      corresponde a: 'TkAs'
+        'begin'   corresponde a: 'TkBegin'
+        'bool'    corresponde a: 'TkBool'
+        'bottom'  corresponde a: 'TkBottom'
+        'case'    corresponde a: 'TkCase'
+        'declare' corresponde a: 'TkDeclare'
+        'do'      corresponde a: 'TkDo'
+        'else'    corresponde a: 'TkElse'
+        'end'     corresponde a: 'TkEnd'
+        'false'   corresponde a: 'TkFalse'
+        'for'     corresponde a: 'TkFor'
+        'if'      corresponde a: 'TkIf'
+        'in'      corresponde a: 'TkIn'
+        'int'     corresponde a: 'TkInt'
+        'length'  corresponde a: 'TkLength'
+        'not'     corresponde a: 'TkNot'
+        'of'      corresponde a: 'TkOf'
+        'or'      corresponde a: 'TkOr'
+        'program' corresponde a: 'TkProgram'
+        'range'   corresponde a: 'TkRange'
+        'read'    corresponde a: 'TkRead'
+        'rtoi'    corresponde a: 'TkRtoi'
+        'then'    corresponde a: 'TkThen'
+        'top'     corresponde a: 'TkTop'
+        'true'    corresponde a: 'TkTrue'
+        'while'   corresponde a: 'TkWhile'
+        'write'   corresponde a: 'TkWrite'
+        'writeln' corresponde a: 'TkWriteln'
