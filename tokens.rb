@@ -1,32 +1,7 @@
 
-
-class FraseS
-
-  attr_accessor :text, :line, :column
-
-  def initialize(text, line, column)
-    @text = text
-    @line = line
-    @column = column
-  end
-
-  
-end
-
-class ErrorLexicos < FraseS
-
-  # def initialize (text, line, column)
-  #   @text = text
-  #   @line =line
-  #   @column = column
-  # end
-
-  def to_s
-    "Error: Caracter inesperado "#{@text}" en la fila #{@line}, columna #{@column}"
-  end
-
-end
-
+###########################
+#Enumeracion de los Tokens#
+###########################
 
 tokens = {
 
@@ -57,7 +32,8 @@ tokens = {
   'Concat'          =>  /\A\&/           , 
   'Inspeccion'      =>  /\A\#/           ,
   'Asignacion'      =>  /\A\:=/          ,
-  'Id'              =>  /\A[0-9a-zA-Z_]*/,
+  'Ident'           =>  /\A[0-9a-zA-Z_]*/,
+  'Num'             =>  /\A[0-9]*/       ,
 
 }
 
@@ -66,6 +42,74 @@ reserved_words = %w(declare execute done read while do if else end)
 reserved_words.each do |s|
   tokens[s.capitalize] = /\A#{s}\b/
 end
+
+###########################
+#Declaracion de las clases#
+###########################
+
+class PhraseS
+
+  attr_accessor :text, :line, :column
+
+  def initialize(text, line, column)
+    @text = text
+    @line = line
+    @column = column
+  end
+
+  
+end
+
+class LexicographError < PhraseS
+
+  def to_s
+    "Error: Caracter inesperado "#{@text}" en la fila #{@line}, columna #{@column}"
+  end
+
+end
+
+class Token < PhraseS
+
+  def initialize(text, line, column,regex)
+    super(text, line, column)
+    @regex = regex
+  end
+
+  def to_s
+    "#{self.class.name} #{if self.class.name.eql?(TkIdent) then (" + @text + ") end}"
+  end
+
+end
+
+#class Lexer
+
+#end
+
+#######################################
+#Declaracion de clases para cada token#
+#######################################
+
+tokens.each do |id,regex|
+
+  newclass = Class::new(Token) do
+    
+    def initialize(text, line, column,regex)
+      @text = text
+      @line = line
+      @column = column
+      @regex = regex
+
+    end
+  end
+
+  Object#const_set("Tk#{id}", newclass)
+
+end
+
+
+###############################
+#Definicion del Main del Lexer#
+###############################
 
 def main
   
