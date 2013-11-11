@@ -62,10 +62,6 @@ end
 
 class LexicographError < PhraseS
 
-  def initialize(text, line, column)
-    super(text, line, column)
-  end
-
   def to_s
     "Error: Caracter inesperado "#{@text}" en la fila #{@line}, columna #{@column}"
   end
@@ -85,45 +81,9 @@ class Token < PhraseS
 
 end
 
-class Lexer
+#class Lexer
 
-  def initialize(input)
-    @tokens = []
-    @errors = []
-    @input = input
-    @line = 0
-    @column = 0
-  end
-
-  def lex_tokens
-    @tokens
-  end
-
-  def lex_errors
-    @errors
-  end
-
-  def lex_ignore(length)
-    @input = @input[length..@input.length]
-  end
-
-  def lex_catch
-
-    return false if @input.eql?(nil)
-
-    @input.match(/\A\s*/)
-    lex_ignore($&.length)
-
-    @input.match(/\A[\w\p{punct}]*\s/)
-
-    if $&.eql?nil
-      lex_ignore(1)
-    else
-      puts "*#{@input[0..($&.length-2)]}"
-      lex_ignore($&.length)
-    end
-  end
-end
+#end
 
 #######################################
 #Declaracion de clases para cada token#
@@ -132,17 +92,17 @@ end
 tokens.each do |id,regex|
 
   newclass = Class::new(Token) do
-
-    @regex = regex
     
-    def initialize(text, line, column)
+    def initialize(text, line, column,regex)
       @text = text
       @line = line
       @column = column
+      @regex = regex
+
     end
   end
 
-  Object::const_set("Tk#{id}", newclass)
+  Object#const_set("Tk#{id}", newclass)
 
 end
 
@@ -154,14 +114,9 @@ end
 def main
   
   input = File::read(ARGV[0])
+  
+  puts input
 
-  goon = true
-
-  lexer = Lexer::new (input)
-
-  while (goon) do
-    goon = lexer.lex_catch
-  end
 end
 
 main
