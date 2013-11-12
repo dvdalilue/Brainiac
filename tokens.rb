@@ -3,7 +3,7 @@
 #Enumeracion de los Tokens#
 ###########################
 
-tokens = {
+$tokens = {
 
   'Coma'            =>  /\A,/            ,
   'Punto'           =>  /\A./            , 
@@ -34,13 +34,14 @@ tokens = {
   'Asignacion'      =>  /\A\:=/          ,
   'Ident'           =>  /\A[0-9a-zA-Z_]*/,
   'Num'             =>  /\A[0-9]*/       ,
+  'Cinta'           =>  /\A\{[+-<>.,]*}/ ,
 
 }
 
-reserved_words = %w(declare execute done read while do if else end)
+reserved_words = %w(declare execute done read while do if else end at tape to)
 
 reserved_words.each do |s|
-  tokens[s.capitalize] = /\A#{s}\b/
+  $tokens[s.capitalize] = /\A#{s}\b/
 end
 
 ###########################
@@ -82,7 +83,6 @@ class Token < PhraseS
   def to_s
     "#{self.class.name} #{if self.class.name.eql?(TkIdent) then (" + @text + ") end}"
   end
-
 end
 
 class Lexer
@@ -93,6 +93,7 @@ class Lexer
     @input = input
     @line = 0
     @column = 0
+    @comment = 0
   end
 
   def lex_tokens
@@ -107,6 +108,17 @@ class Lexer
     @input = @input[length..@input.length]
   end
 
+  def tokenize(somephrase, length)
+    if $tokens.has_key?(somephrase.capitalize)
+      puts "Es palabra reservada -- #{somephrase}"
+    elsif somephrase =~ /\A\$-.*/
+      @comment = 1
+      puts "Comentario inicia"
+    else
+      puts somephrase
+    end
+  end
+
   def lex_catch
 
     return false if @input.eql?(nil)
@@ -119,7 +131,15 @@ class Lexer
     if $&.eql?nil
       lex_ignore(1)
     else
-      puts "*#{@input[0..($&.length-2)]}"
+
+      if @comment == 0
+        tokenize(@input[0..($&.length-2)],$&.length-2)
+      else
+        if $&.include?("-$")
+          @comment = 0
+          puts "Comentario Cierra"
+        end
+      end
       lex_ignore($&.length)
     end
   end
@@ -129,7 +149,7 @@ end
 #Declaracion de clases para cada token#
 #######################################
 
-tokens.each do |id,regex|
+$tokens.each do |id,regex|
 
   newclass = Class::new(Token) do
 
