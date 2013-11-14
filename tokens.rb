@@ -82,7 +82,7 @@ class Token < PhraseS
   #attr_accessor :line, :column
 
   def to_s
-    "#{self.class.name} #{if self.class.name.eql?(TkIdent) then (" + @text + ") end}"
+    "#{self.class.name}#{if self.class.name.eql?("TkIdent") then "(\"#{@text}\")" end}#{if self.class.name.eql?("TkNum") then "(#{@text})" end} "
   end
 end
 
@@ -92,8 +92,8 @@ class Lexer
     @tokens = []
     @errors = []
     @input = input
-    @line = 0
-    @column = 0
+    @line = 1
+    @column = 1
     @comment = 0
   end
 
@@ -140,7 +140,6 @@ class Lexer
       end
       
       newclasstk = lookclass(newclasstk)
-      puts newclasstk.regex.inspect
       newtk = newclasstk.new(newtoktext,@line,@colunm)
       
       if newtk.is_a? LexicographError
@@ -174,6 +173,10 @@ class Lexer
       end
       lex_ignore(mlength)
     end
+  end
+
+  def to_s
+    (if !@errors.eql?(nil) then @tokens else @errors end).map { |tk| puts tk.inspect }
   end
 end
 
@@ -214,6 +217,8 @@ def main
   while (goon) do
     goon = lexer.lex_catch
   end
+
+  lexer.to_s
 end
 
 main
