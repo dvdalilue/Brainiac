@@ -5,9 +5,9 @@
 
 $tokens = {
 
-  'Coma'            =>  /\A,/                     ,
-  'Punto'           =>  /\A\./                     , 
-  'PuntoYComa'      =>  /\A;/                     , 
+  'Coma'            =>  /\A\,/                    ,
+  'Punto'           =>  /\A\./                    , 
+  'PuntoYComa'      =>  /\A\;/                    , 
   'ParAbre'         =>  /\A\(/                    , 
   'ParCierra'       =>  /\A\)/                    , 
   'CorcheteAbre'    =>  /\A\[/                    , 
@@ -34,11 +34,11 @@ $tokens = {
   'Asignacion'      =>  /\A\:=/                   ,
   'Ident'           =>  /\A[a-zA-Z_][0-9a-zA-Z_]*/,
   'Num'             =>  /\A[0-9]*/                ,
-  'Cinta'           =>  /\A\{[+-<>.,]*}/          ,
+  'Cinta'           =>  /\A\{[+-<>.]*}/          ,
 
 }
 
-reserved_words = %w(declare execute done read while do if else end at tape to)
+reserved_words = %w(declare execute done read while do if else end at tape to true false integer boolean)
 
 reserved_words.each do |s|
   $tokens[s.capitalize] = /\A#{s}\b/
