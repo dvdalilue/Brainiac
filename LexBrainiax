@@ -129,9 +129,7 @@ class Lexer
           break
         end
       }
-    end
 
-    if @comment == 0
       if nct == "TkError"
         nct = LexicographError
       else      
@@ -140,7 +138,7 @@ class Lexer
 
       newtk = nct.new(ntt,@line,@column)
       
-      if newtk.is_a? LexicographError
+      if newtk.is_a? LexicographError 
         @errors << newtk
       else
         @tokens << newtk
@@ -166,10 +164,8 @@ class Lexer
       mlength = $&.length
       if @comment == 0
         tokenize(@input[0..($&.length-2)])
-      else
-        if $& =~ /\A.*-\$/
-          @comment = 0
-        end
+      elsif $& =~ /\A.*-\$/
+        @comment = 0
       end
       lex_ignore(mlength)
     end
