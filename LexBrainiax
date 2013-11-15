@@ -114,10 +114,6 @@ class Lexer
     end
   end
 
-  def lookclass(xclass)
-    return Object.const_get(xclass)
-  end
-
   def tokenize(nphrase)
 
     nct = LexicographError
@@ -139,7 +135,7 @@ class Lexer
       if nct == "TkError"
         nct = LexicographError
       else      
-        nct = lookclass(nct)
+        nct = Object.const_get(nct)
       end
 
       newtk = nct.new(ntt,@line,@column)
