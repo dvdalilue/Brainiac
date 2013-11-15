@@ -1,0 +1,3 @@
+declare contador! :: integer execute
+  contador ?:= 35
+end
