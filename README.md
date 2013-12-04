@@ -1,10 +1,10 @@
 Brainiac
 ========
 
-Lexer And Parser In Ruby
+Lexer & Parser In Ruby [![Ruby](https://developers.google.com/+/images/16-ruby.png)](https://www.ruby-lang.org/)
 
 Lexer
-======
+------
 
 En esta primera parte se implementa el analizador lexicografico, de
 manera muy rudimentaria dado que el lenguaje no posee una herramieta
@@ -93,5 +93,22 @@ Estos dos aspectos son lo que inspiraron a usar el lenguaje y sus
 beneficios de la metaprogramacion
 
 Mas abajo existen varios enlaces que brindan ayudan a la compresion e
-implementacion del `Lexer`
- 
+implementacion del `Lexer`:
+
+`http://stackoverflow.com/questions/2505067/class-self-idiom-in-ruby
+http://stackoverflow.com/questions/10964081/class-self-vs-self-method-with-ruby-whats-better
+http://en.wikipedia.org/wiki/Singleton_pattern
+https://github.com/glimonta/Traductores/blob/c8a26f401af44dad0189a31a3dbbc17194f40d87/rangex
+http://www.ruby-doc.org/stdlib-1.9.3/libdoc/irb/rdoc/RubyLex.html
+http://fr.wikibooks.org/wiki/Programmation_Ruby/H%C3%A9ritage
+http://www.techotopia.com/index.php/Ruby_Essentials
+http://yankist.com/blog/2011/02/02/create-ruby-dynamic-class/
+http://ruby-doc.org/core-2.0.0/Object.html
+http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
+http://www.tutorialspoint.com/ruby/ruby_regular_expressions.htm
+http://codelikezell.com/how-to-use-ruby-variables-in-regular-expressions/
+http://doc.infosnel.nl/ruby_regular_expressions.html 
+http://www.ruby-doc.org/core-1.9.3/Regexp.html
+http://ruby.about.com/od/qa/ss/Variables-Declared-In-The-Global-Scope.htm
+http://es.softuses.com/75486 
+http://www.ruby-doc.org/core-2.0.0/Hash.html#method-i-key`
