@@ -1,7 +1,7 @@
-Brainiac
+Brainiac [![Ruby](https://developers.google.com/+/images/16-ruby.png)](https://www.ruby-lang.org/)
 ========
 
-Lexer & Parser In Ruby [![Ruby](https://developers.google.com/+/images/16-ruby.png)](https://www.ruby-lang.org/)
+Lexer & Parser In Ruby
 
 Lexer
 ------
@@ -95,7 +95,7 @@ beneficios de la metaprogramacion
 Mas abajo existen varios enlaces que brindan ayudan a la compresion e
 implementacion del `Lexer`:
 
-`http://stackoverflow.com/questions/2505067/class-self-idiom-in-ruby
+http://stackoverflow.com/questions/2505067/class-self-idiom-in-ruby
 http://stackoverflow.com/questions/10964081/class-self-vs-self-method-with-ruby-whats-better
 http://en.wikipedia.org/wiki/Singleton_pattern
 https://github.com/glimonta/Traductores/blob/c8a26f401af44dad0189a31a3dbbc17194f40d87/rangex
@@ -111,4 +111,4 @@ http://doc.infosnel.nl/ruby_regular_expressions.html
 http://www.ruby-doc.org/core-1.9.3/Regexp.html
 http://ruby.about.com/od/qa/ss/Variables-Declared-In-The-Global-Scope.htm
 http://es.softuses.com/75486 
-http://www.ruby-doc.org/core-2.0.0/Hash.html#method-i-key`
+http://www.ruby-doc.org/core-2.0.0/Hash.html#method-i-key
