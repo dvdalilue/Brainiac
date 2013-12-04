@@ -10,7 +10,7 @@ En esta primera parte se implementa el analizador lexicografico, de
 manera muy rudimentaria dado que el lenguaje no posee una herramieta
 que brinde una facilidad para la creacion de un Lexer. 
 
-Pero igual es sumamente interesante todo lo que brinda [![Ruby]https://www.ruby-lang.org/en/)]
+Pero igual es sumamente interesante todo lo que brinda [![Ruby]https://www.ruby-lang.org/en/)](https://www.ruby-lang.org/)
 
 Estructura
 -----------
