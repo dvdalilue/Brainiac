@@ -90,7 +90,7 @@ class Token < PhraseS
     attr_accessor :regex #Esta seccion es para que la clase "redefinir la clase" 
   end                   #Se conoce como sigleton
 
-  def to_s #Salida especificada
+  def to_s#Salida especificada
     "#{self.class.name}#{if self.class.name.eql?("TkIdent") then "(\"#{@text}\")" end}#{if self.class.name.eql?("TkNum") then "(#{@text})" end} "
   end
 end
@@ -123,7 +123,7 @@ class Lexer
 
     word = @input[0..length] # Se crea un aux de lo que se quiere ignorar
     lineas = (word + ' ').lines.to_a.length.pred #Se saca el numero de lineas, 
-    #convirtiendo en arreglo de las palabras separadas \n y midiendolo
+                                  #convirtiendo en arreglo de las palabras separadas \n y midiendolo
     @line += lineas
     @input = @input[length..@input.length] # Se omite la solicitado
 
@@ -194,7 +194,7 @@ class Lexer
   end
 
   def to_s #Dependiendo de si hubo errores o no, cambia la salida
-    (if @errors.empty? then @tokens else @errors end).map { |tk| puts tk.to_s }
+    (if @errors.empty? then @tokens else @errors end).map { |tk| puts tk.inspect }
   end
 end
 
