@@ -5,6 +5,7 @@
 
 # Trash files #
 ###############
+Parser.rb
 .directory
 [0-9]*
 

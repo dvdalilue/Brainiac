@@ -16,7 +16,7 @@ module Brainiac
   tk = {
 
     'Cinta'           =>  /\A{[+-<>.,]*}/               ,      
-    'ConstructorTape' =>  /\A\[[a-zA-Z_][0-9a-zA-Z_]*\]/,
+    'ConstructorTape' =>  /\A\[[_]*[0-9a-zA-Z_]+\]/     ,
     'Coma'            =>  /\A\,/                        ,      
     'Punto'           =>  /\A\./                        ,       
     'PuntoYComa'      =>  /\A\;/                        ,       

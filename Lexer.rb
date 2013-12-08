@@ -1,6 +1,6 @@
 module Brainiac
 
-  require './Classs'
+  require_relative 'Classs'
   #Clase fundamental que realiza el recorrido de la entrada
   #Diferencia de los tokens y errores
   #Para luego ser impresos en pantalla
@@ -14,10 +14,6 @@ module Brainiac
       @column = 1
       @comment = 0
     end
-    #Ignora una cantidad de columnas determinada por "legnth" 
-    def lex_ignore_c(length)
-      @column  += length
-    end
     #Ignora la palabra que se analizo o espacios en blanco
     def lex_ignore(length)
       
@@ -30,7 +26,7 @@ module Brainiac
       @input = @input[length..@input.length] # Se omite la solicitado
 
       if lineas.eql?0 then
-        lex_ignore_c(length) #Se suma las columnas omitidas a las que habia
+        @column  += length #Se suma las columnas omitidas a las que habia
       else
         @column = 1 #Sino se colocan en 1 por salto de linea
       end
@@ -62,7 +58,7 @@ module Brainiac
         else
           @tokens << newtk #Sino en este, por ser token
           if ntt.length < nphrase.length
-            lex_ignore_c(ntt.length)  #Caso especial en el que los tokens estan pegados
+            @column  += ntt.length  #Caso especial en el que los tokens estan pegados
             tokenize(nphrase[ntt.length..nphrase.length]) #Se ignora y se tokeniza lo que falta
           end
         end
@@ -73,13 +69,11 @@ module Brainiac
 
       return false if @input.eql?(nil) #retorna si la entrada se acabo, con false
 
-      @input.match(/\A(\s|\n)*/) #ignora los espacios y saltos de linea
+      @input.match(/\A(\s)*/) #ignora los espacios y saltos de linea
       lex_ignore($&.length)
       @input.match(/\A[\w\p{punct}]*\s/) #Busca la proxima palabra
 
-      if $&.eql?nil
-        lex_ignore(1) #Si el match es nil se sigue al siguiente caracter
-      else
+      if !$&.eql?nil
         mlength = $&.length 
         if @comment == 0
           tokenize(@input[0..($&.length-2)]) #Se tokeniza si no estamos en comentario
