@@ -1,5 +1,5 @@
 RACC = racc
-FLAGS = -g -v
+FLAGS = -g
 PARSER = Parser.y
 
 Parser.rb: 

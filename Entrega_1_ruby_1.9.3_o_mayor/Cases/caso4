@@ -1,14 +1,5 @@
-declare x, y :: integer; t :: tape execute true
-x := 3 ;
-y := 15 ;
-from 1 to x do
-t := [y] ;
-{++++++++++} at t;
-while #t /= 0 do
-{>+++++++>++++++++++>+++>+<<<<-} at t
-done
-{>++.>+.+++++++..+++.>++.} at t;
-{<<+++++++++++++++.>.+++.} at t;
-{------.--------.>+.>.} at t
-done
+declare x, y :: integer; t :: tape execute
+   x := 3 ;
+   y := 15 ;
+   t := x + p   
 done
