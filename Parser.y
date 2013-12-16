@@ -6,7 +6,7 @@ class Parser
         '>=' ':=' 'and' 'done' 'read' 'tape' 'write' 'cinta' '%' '~' 
         '<' '>' '=' 'to' 'do' 'if' 'true' 'false' 'else' 'while' 
         'or' 'ident' '/' '&' '#' '}' '[' 'at' 'end' 'integer' 
-        'boolean' 'num' 'declare' 'execute' 'from' 'consttape' 
+        'boolean' 'num' 'declare' 'execute' 'for' 'consttape' 
         UMINUS
 
   prechigh
@@ -36,7 +36,7 @@ class Parser
     'if'        'TkIf'
     'else'      'TkElse'
     'end'       'TkEnd'
-    'from'      'TkFrom'
+    'for'       'TkFor'
     'at'        'TkAt'
     'tape'      'TkTape'
     'to'        'TkTo'
