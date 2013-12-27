@@ -34,9 +34,18 @@ class Lexer
 
     return false if @input.eql?(nil) #retorna si la entrada se acabo, con false
 
-    @input.match(/\A\s*(\$-(.|\n|\p{punct})*-\$|\$\$.*\n|)\s*/) #ignora los espacios y saltos de linea
-    lex_ignore($&.length)
-    @input.match(/\A[\w\p{punct}]*/) #Busca la proxima palabra
+    @input.match(/\A\s*(\$\$.*|\$-(.|\n)*-\$|\n|)\s*/) #ignora los espacios y saltos de linea
+   # puts '*'+$&+'**'
+    aux = $&
+    if $& =~ /-\$/
+      lex_ignore(($`+$&).length)
+      return true
+   # elsif aux =~ /\n\$\$/
+    #  return true
+    else
+      lex_ignore(aux.length)
+    end
+    @input.match(/\A(\w|\p{punct})*/) #Busca la proxima palabra
     if !$&.length.eql?0
         nphrase = @input[0..($&.length-1)] #Se tokeniza si no estamos en comentario
         nct = LexicographError #Se define una var con el nombre de la clase
@@ -58,10 +67,10 @@ class Lexer
       lex_ignore(ntt.length)
       if newtk.is_a? LexicographError 
         @errors << newtk  #Si es un error se guarda en este arreglo
-        raise newtk 
+        #raise newtk 
       else
         @tokens << newtk #Sino en este, por ser token
-        return newtk
+        #return newtk
       end
     end
   end

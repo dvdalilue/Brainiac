@@ -30,10 +30,15 @@ end
 def main
 
   input = File::read(ARGV[0]) #Lectura de entrada en un string
-  parser = Parser::new.parse(Lexer::new(input)) #Creacion de un lexer
-
-  to_s_recursive(parser," ")
-  
+  input.force_encoding 'ASCII-8BIT'
+  #parser = Parser::new.parse(Lexer::new(input)) #Creacion de un lexer
+  lexer = Lexer::new(input)
+  #to_s_recursive(parser," ")
+  goon = true
+  while (goon) do
+    goon = lexer.lex_catch
+  end
+  lexer.to_s
  # puts parser.attr_value[0][1]
 
   #puts parser.to_s
