@@ -3,7 +3,7 @@
 ###########################
 #Creacion de un hash de las palabras claves
 rw = Hash::new
-reserved_words = %w(declare execute done read write while do if else end for at tape to true false integer boolean)
+reserved_words = %w(declare execute done read write while do if else end for from at tape to true false integer boolean)
 
 #Se van agregando iterativamente al hash con su regex
 reserved_words.each do |s|
