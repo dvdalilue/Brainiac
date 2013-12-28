@@ -1,0 +1,1 @@
+TkDeclare TkIdent("x") TkComa TkIdent("y") TkType TkInteger TkExecute TkRead TkIdent("x") TkPuntoYComa TkRead TkIdent("y") TkPuntoYComa TkWhile TkIdent("x") TkDesigual TkIdent("y") TkDo TkIf TkIdent("x") TkMayor TkIdent("y") TkThen TkIdent("x") TkAsignacion TkIdent("x") TkMenos TkIdent("y") TkElse TkIdent("y") TkAsignacion TkIdent("y") TkResta TkIdent("x") TkDone TkDone TkEnd

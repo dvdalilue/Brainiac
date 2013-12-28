@@ -1,0 +1,14 @@
+declare x, y :: integer 
+execute
+	read x ;
+	read y ;
+	while x /= y do
+		if x > y then
+			x := x - y
+		else
+			y := y - x
+		done
+	done
+	$- El maximo común divisor ahora está en 'x' y en 'y'. -$
+end
+

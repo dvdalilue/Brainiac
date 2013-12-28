@@ -1,16 +1,16 @@
+ 
 declare ++
 Done done
 {+++---+}]]=<><<<>>>}
 
 $- Esto va a tener errores -$
-
 $$ En varias partes
 
 done not done
 
-while true do $
+while true do 
 read ++ books;
-: /= 
+ /= 
 write 2+2*
 
 if write while true

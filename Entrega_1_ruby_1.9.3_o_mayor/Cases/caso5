@@ -1,7 +1,7 @@
 declare x, y :: integer; t :: tape execute true
 x := 3 ;
 y := 15 ;
-from 1 to x do
+for 1 to x do
 t := [y] ;
 {++++++++++} at t;
 while #t /= 0 do

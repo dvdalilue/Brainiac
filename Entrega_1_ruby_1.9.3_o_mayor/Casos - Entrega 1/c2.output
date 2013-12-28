@@ -1,0 +1,3 @@
+TkDeclare TkIdent("x") TkComa TkIdent("y") TkType TkInteger TkPuntoYComa TkIdent("x") TkAsignacion TkNum(3) TkPuntoYComa TkIdent("y") TkAsignacion TkIdent("hola") TkIdent("hola") TkNum(123928932489) TkTrue TkAsignacion TkFalse TkIdent("Execute") TkFrom TkNum(1) TkTo TkIdent("x") TkDo TkDeclare TkType TkIgual TkNegacion TkNum(2) TkIdent("ifwhile") TkCorcheteAbre TkIdent("y")
+TkCorcheteCierra TkPuntoYComa TkLlaveAbre TkResta TkMayor TkMas TkPunto TkMenor TkPunto TkLlaveCierra TkAt TkDone TkIdent("Done")
+
