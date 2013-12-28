@@ -5,6 +5,7 @@
 
 # Trash files #
 ###############
+*.swp
 Parser.rb
 .directory
 [0-9]*
