@@ -1,6 +1,0 @@
-end /\
-integer contador declare ::
-$- Asignar al 35
-el valor contador? -$
-35 := contador
-execute
