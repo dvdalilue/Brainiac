@@ -11,10 +11,10 @@ def to_s_recursive(ast,prof)
   if !ast.class.eql?Array
     ast.attr_value.each do |name|
       if !(name[0] =~ /\A.*\./)
-        if name[1].class.name =~ /\A\Tk.*/ 
+        if name[1].class.name =~ /\A\Tk.*/
           puts "#{prof}#{name[0].upcase}: #{name[1].text.upcase}"
         else
-          puts "#{prof}#{name[0].upcase}"
+          puts "#{prof}#{name[0].upcase}: #{name[1].class.name}"
           to_s_recursive(name[1], "#{prof}  ")
         end
       end
@@ -28,21 +28,15 @@ def to_s_recursive(ast,prof)
 end
 
 def main
-
   input = File::read(ARGV[0]) #Lectura de entrada en un string
   input.force_encoding 'ASCII-8BIT'
-  #parser = Parser::new.parse(Lexer::new(input)) #Creacion de un lexer
-  lexer = Lexer::new(input)
-  #to_s_recursive(parser," ")
-  goon = true
-  while (goon) do
-    goon = lexer.lex_catch
+  lexer = Lexer::new input
+  begin
+    parser = Parser::new.parse(lexer) #Creacion de un lexer
+    to_s_recursive(parser," ")
+  rescue SyntacticError => se
+    puts se
   end
-  lexer.to_s
- # puts parser.attr_value[0][1]
-
-  #puts parser.to_s
-  
 end
 
 main

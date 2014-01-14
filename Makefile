@@ -2,8 +2,8 @@ RACC = racc
 FLAGS = -g
 PARSER = Parser.y
 
-Parser.rb: 
-	${RACC} ${PARSER} -o $@
+Parser.rb: ${PARSER}
+	${RACC} $< -o $@
 
 clean:
 	rm Parser.rb
