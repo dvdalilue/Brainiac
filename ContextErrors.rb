@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class ContextError < RuntimeError
 end
 
@@ -11,12 +12,12 @@ class ErrorDeTipo < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: se intenta hacer la operacion #{@operacion} entre operandos de tipos \"#{@tipo_izq}\" y \"#{@tipo_der}\""
+    "Error cerca de la línea #{@linea} y columna #{@columna}: se intenta hacer la operacion #{@operacion} entre operandos de tipos \"#{@tipo_izq}\" y \"#{@tipo_der}\""
   end
 end
 
 class ErrorDeTipoUnario < ContextError
-  def initialize(incio, columna, operacion, tipo)
+  def initialize(linea, columna, operacion, tipo)
     @linea = linea
     @columna = columna
     @operacion = operacion
@@ -24,7 +25,7 @@ class ErrorDeTipoUnario < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: se intenta hacer la operacion #{@operacion} a un operando de tipo \"#{@tipo}\""
+    "Error cerca de la línea #{@linea} y columna #{@columna}: se intenta hacer la operacion #{@operacion} a un operando de tipo \"#{@tipo}\""
   end
 end
 
@@ -36,20 +37,7 @@ class NoDeclarada < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: la variable \"#{@nombre}\" no se encuentra declarada"
-  end
-end
-
-class ErrorDeTipoFuncion < ContextError
-  def initialize(linea, columna, nombre_funcion,tipo)
-    @linea = linea
-    @columna = columna
-    @nombre_funcion = nombre_funcion
-    @tipo = tipo
-  end
-
-  def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: el argumento de la #{@nombre_funcion} es de tipo \"#{@tipo}\" y se esperaba tipo \"Range\""
+    "Error cerca de la línea #{@linea} y columna #{@columna}: la variable \"#{@nombre}\" no se encuentra declarada"
   end
 end
 
@@ -61,7 +49,7 @@ class ErrorModificarIteracion < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: se intenta modificar la variable \"#{@nombre}\" que pertenece a una iteración"
+    "Error cerca de la línea #{@linea} y columna #{@columna}: se intenta modificar la variable \"#{@nombre}\" que pertenece a una iteración"
   end
 end
 
@@ -75,7 +63,7 @@ class ErrorDeTipoAsignacion < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: se intenta asignar algo del tipo \"#{@tipo_asig}\" a la variable \"#{@nombre}\" de tipo \"#{@tipo_var}\""
+    "Error cerca de la línea #{@linea} y columna #{@columna}: se intenta asignar algo del tipo \"#{@tipo_asig}\" a la variable \"#{@nombre}\" de tipo \"#{@tipo_var}\""
   end
 end
 
@@ -87,7 +75,7 @@ class ErrorCondicionCondicional < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: la condición es de tipo \"#{@tipo}\""
+    "Error cerca de la línea #{@linea} y columna #{@columna}: la condición es de tipo \"#{@tipo}\""
   end
 end
 
@@ -99,19 +87,7 @@ class ErrorExpresionCase < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: la expresión del case es de tipo \"#{@tipo}\""
-  end
-end
-
-class ErrorRangoIteracion < ContextError
-  def initialize(linea, columna, tipo)
-    @linea = linea
-    @columna = columna
-    @tipo = tipo
-  end
-
-  def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: el rango de la iteración es de tipo \"#{@tipo}\""
+    "Error cerca de la línea #{@linea} y columna #{@columna}: la expresión del case es de tipo \"#{@tipo}\""
   end
 end
 
@@ -123,6 +99,6 @@ class ErrorCondicionIteracion < ContextError
   end
 
   def to_s
-    "Error entre la línea #{@linea.linea}, columna #{@linea.columna} y la linea #{@columna.linea}, columna #{@columna.columna}: la condición de la iteración es de tipo \"#{@tipo}\""
+    "Error cerca de la línea #{@linea} y columna #{@columna}: la condición de la iteración es de tipo \"#{@tipo}\""
   end
 end

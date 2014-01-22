@@ -33,7 +33,8 @@ def main
   lexer = Lexer::new input
   begin
     parser = Parser::new.parse(lexer) #Creacion de un lexer
-    to_s_recursive(parser," ")
+    parser.check
+    #to_s_recursive(parser," ")
   rescue SyntacticError => se
     puts se
   end
