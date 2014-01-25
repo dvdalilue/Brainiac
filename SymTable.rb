@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 #SymTable
+class SymTableError < RuntimeError; end
 
-class RedefineError < RuntimeError
+class RedefineError < SymTableError
   def initialize(token, token_viejo)
     @token = token
     @token_viejo = token_viejo
@@ -12,7 +13,7 @@ class RedefineError < RuntimeError
   end
 end
 
-class DeleteError < RuntimeError
+class DeleteError < SymTableError
   def initialize(token)
     @token = token
   end
@@ -30,7 +31,7 @@ class SymTable
   end
 
   def insert(token, tipo)
-    raise RedefinirError::new(token, @table[token.texto][:token]) if @table.has_key?(token.text)
+    raise RedefineError::new(token, find(token.text)[:token]) if isMember?(token.text)
     @table[token.text] = { :token => token, :tipo => tipo}
   end
 
@@ -49,6 +50,10 @@ class SymTable
   end
 
   def isMember?(nombre)
-    return @table.has_key?(nombre)
+    if @padre.nil? then
+      return @table.has_key?(nombre)
+    else
+      return (@table.has_key?(nombre) or @padre.isMember?(nombre))
+    end
   end
 end

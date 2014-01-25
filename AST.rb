@@ -1,4 +1,3 @@
-#require_relative 'ContextErrors'
 #AST
 
 $as_tree = [
@@ -38,7 +37,7 @@ $as_tree = [
                                               ['Conjuncion', %w[opIzq opDer], []],
                                               ['Disyuncion', %w[opIzq opDer], []],
                                               ['Igual', %w[opIzq opDer], []],
-                                              ['Inequevalencia', %w[opIzq opDer], []],
+                                              ['Inequivalencia', %w[opIzq opDer], []],
                                               ['Menor', %w[opIzq opDer], []],
                                               ['Mayor', %w[opIzq opDer], []],
                                               ['MenorOIgual', %w[opIzq opDer], []],

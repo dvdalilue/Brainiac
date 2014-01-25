@@ -41,18 +41,6 @@ class NoDeclarada < ContextError
   end
 end
 
-class ErrorModificarIteracion < ContextError
-  def initialize(linea, columna, nombre)
-    @linea = linea
-    @columna = columna
-    @nombre = nombre
-  end
-
-  def to_s
-    "Error cerca de la línea #{@linea} y columna #{@columna}: se intenta modificar la variable \"#{@nombre}\" que pertenece a una iteración"
-  end
-end
-
 class ErrorDeTipoAsignacion < ContextError
   def initialize(linea, columna, tipo_asig, nombre, tipo_var)
     @linea = linea
@@ -79,18 +67,6 @@ class ErrorCondicionCondicional < ContextError
   end
 end
 
-class ErrorExpresionCase < ContextError
-  def initialize(linea, columna, tipo)
-    @linea = linea
-    @columna = columna
-    @tipo = tipo
-  end
-
-  def to_s
-    "Error cerca de la línea #{@linea} y columna #{@columna}: la expresión del case es de tipo \"#{@tipo}\""
-  end
-end
-
 class ErrorCondicionIteracion < ContextError
   def initialize(linea, columna, tipo)
     @linea = linea
@@ -100,5 +76,17 @@ class ErrorCondicionIteracion < ContextError
 
   def to_s
     "Error cerca de la línea #{@linea} y columna #{@columna}: la condición de la iteración es de tipo \"#{@tipo}\""
+  end
+end
+
+class ErrorLimiteIteracion < ContextError
+  def initialize(linea, columna, tipo)
+    @linea = linea
+    @columna = columna
+    @tipo = tipo    
+  end
+
+  def to_s
+    "Error cerca de la línea #{@linea} y columna #{@columna}: el limite la iteración es de tipo \"#{@tipo}\""
   end
 end

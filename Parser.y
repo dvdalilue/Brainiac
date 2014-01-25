@@ -83,83 +83,83 @@ class Parser
   
 rule
 
-     Programa: Alcance                                                                 {result = Programa::new(val[0])}
+     Programa: Alcance                                                                 {result = Programa::new(val[0]).set_line(val[0].line).set_column(val[0].column)           }
              ;                                                                         
                                                                                        
-      Alcance: 'declare' Declaracion 'execute' Instruccion 'done'                      {result = Alcance::new(val[1], val[3])}
-             | 'execute' Instruccion 'done'                                            {result = Alcance::new([], val[1])}
+      Alcance: 'declare' Declaracion 'execute' Instruccion 'done'                      {result = Alcance::new(val[1], val[3]).set_line(val[0].line).set_column(val[3].column)    }
+             | 'execute' Instruccion 'done'                                            {result = Alcance::new([], val[1]).set_line(val[0].line).set_column(val[2].column)        }
              ;
 
-  Declaracion: ListaDecla                                                              {result = Declaraciones::new(val[0])}
+  Declaracion: ListaDecla                                                              {result = Declaraciones::new(val[0]).set_line(val[0][0].line).set_column(val[0][0].column)      }
              ;                                                                         
                                                                                        
-   ListaDecla: Declare                                                                 {result = [val[0]]}
-             | Declare ';' ListaDecla                                                  {result = [val[0]] + val[2]}
+   ListaDecla: Declare                                                                 {result = [val[0]]                        }
+             | Declare ';' ListaDecla                                                  {result = [val[0]] + val[2]               }
              ;                                                                         
                                                                                        
-      Declare: ListaIdent '::' Tipo                                                    {result = Declaracion::new(val[0], val[2])}
+      Declare: ListaIdent '::' Tipo                                                    {result = Declaracion::new(val[0], val[2]).set_line(val[0][0].line).set_column(val[1].column)}
              ;                                                                         
                                                                                        
-   ListaIdent: 'ident'                                                                 {result = [Variable::new(val[0])]}
-             | 'ident' ',' ListaIdent                                                  {result = [Variable::new(val[0])] + val[2]}
+   ListaIdent: 'ident'                                                                 {result = [Variable::new(val[0]).set_line(val[0].line).set_column(val[0].column)]         }
+             | 'ident' ',' ListaIdent                                                  {result = [Variable::new(val[0]).set_line(val[0].line).set_column(val[0].column)] + val[2]}
              ;                                                                         
                                                                                        
-         Tipo: 'boolean'                                                               {result = val[0]}
-             | 'integer'                                                               {result = val[0]}
-             | 'tape'                                                                  {result = val[0]}
+         Tipo: 'boolean'                                                               {result = val[0]                          }
+             | 'integer'                                                               {result = val[0]                          }
+             | 'tape'                                                                  {result = val[0]                          }
              ;                                                                         
                                                                                        
-  Instruccion: ListaInstr                                                              {result = Instrucciones::new(val[0])}
+  Instruccion: ListaInstr                                                              {result = Instrucciones::new(val[0]).set_line(val[0][0].line).set_column(val[0][0].column)      }
              ;                                                                         
                                                                                        
-   ListaInstr: Instruc                                                                 {result = [val[0]]}
-             | Instruc ';' ListaInstr                                                  {result = [val[0]] + val[2]}
+   ListaInstr: Instruc                                                                 {result = [val[0]]                        }
+             | Instruc ';' ListaInstr                                                  {result = [val[0]] + val[2]               }
              ;                                                                         
                                                                                        
-      Instruc: 'ident' ':=' Expresion                                                  {result = Asignacion::new(val[0], val[2])}
-             | Condicional                                                             {result = val[0]}
-             | 'while' Expresion 'do' Instruccion 'done'                               {result = IteracionI::new(val[1], val[3])}
-             | 'cinta' 'at' Expresion                                                  {result = Ejecucion::new(val[0], val[2])}
-             | IteracionD                                                              {result = val[0]}
-             | IO                                                                      {result = val[0]}
-             | Alcance                                                                 {result = SecInterna::new(val[0])}
+      Instruc: 'ident' ':=' Expresion                                                  {result = Asignacion::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column) }
+             | Condicional                                                             {result = val[0]                          }
+             | 'while' Expresion 'do' Instruccion 'done'                               {result = IteracionI::new(val[1], val[3]).set_line(val[0].line).set_column(val[0].column) }
+             | 'cinta' 'at' Expresion                                                  {result = Ejecucion::new(val[0], val[2]).set_line(val[0].line).set_column(val[0].column)  }
+             | IteracionD                                                              {result = val[0]                          }
+             | IO                                                                      {result = val[0]                          }
+             | Alcance                                                                 {result = SecInterna::new(val[0]).set_line(val[0].line).set_column(val[0].column)         }
              ;
 
-  Condicional: 'if' Expresion 'then' Instruccion 'done'                                {result = CondicionalIf::new(val[1], val[3])}
-             | 'if' Expresion 'then' Instruccion 'else' Instruccion 'done'             {result = CondicionalElse::new(val[1], val[3], val[5])}
+  Condicional: 'if' Expresion 'then' Instruccion 'done'                                {result = CondicionalIf::new(val[1], val[3]).set_line(val[0].line).set_column(val[3].column)               }
+             | 'if' Expresion 'then' Instruccion 'else' Instruccion 'done'             {result = CondicionalElse::new(val[1], val[3], val[5]).set_line(val[0].line).set_column(val[3].column)     }
              ;
 
-   IteracionD: 'for' Expresion 'to' Expresion 'do' Instruccion 'done'                  {result = IteracionDExpA::new(val[1], val[3], val[5])}
-             | 'for' 'ident' 'from' Expresion 'to' Expresion 'do' Instruccion 'done'   {result = IteracionDId::new(val[1], val[3], val[5], val[7])}
+   IteracionD: 'for' Expresion 'to' Expresion 'do' Instruccion 'done'                  {result = IteracionDExpA::new(val[1], val[3], val[5]).set_line(val[0].line).set_column(val[0].column)      }
+             | 'for' 'ident' 'from' Expresion 'to' Expresion 'do' Instruccion 'done'   {result = IteracionDId::new(val[1], val[3], val[5], val[7]).set_line(val[0].line).set_column(val[0].column)}
              ;
 
-           IO: 'read' 'ident'                                                          {result = ES::new(val[0], val[1])}
-             | 'write' Expresion                                                       {result = ES::new(val[0], val[1])}
+           IO: 'read' 'ident'                                                          {result = ES::new(val[0], val[1]).set_line(val[0].line).set_column(val[0].column)            }
+             | 'write' Expresion                                                       {result = ES::new(val[0], val[1]).set_line(val[0].line).set_column(val[0].column)            }
              ;                                                                       
                                                                                      
-    Expresion: 'num'                                                                   {result = Entero::new(val[0])}
-             | 'ident'                                                                 {result = Variable::new(val[0])}
-             | Expresion '+' Expresion                                                 {result = Suma::new(val[0], val[2])}
-             | Expresion '-' Expresion                                                 {result = Resta::new(val[0], val[2])}
-             | Expresion '*' Expresion                                                 {result = Multiplicacion::new(val[0], val[2])}
-             | Expresion '/' Expresion                                                 {result = Division::new(val[0], val[2])}
-             | Expresion '%' Expresion                                                 {result = Modulo::new(val[0], val[2])}
-             | '-' Expresion =UMINUS                                                   {result = Menos_Unario::new(val[1])}
-             | 'true'                                                                  {result = True::new()}
-             | 'false'                                                                 {result = False::new()}
-             | '~' Expresion                                                           {result = Negacion::new(val[1])}
-             | Expresion 'and' Expresion                                               {result = Conjuncion::new(val[0], val[2])}
-             | Expresion 'or' Expresion                                                {result = Disyuncion::new(val[0], val[2])}
-             | Expresion '=' Expresion                                                 {result = Igual::new(val[0], val[2])}
-             | Expresion '/=' Expresion                                                {result = Inequevalencia::new(val[0], val[2])}
-             | Expresion '<' Expresion                                                 {result = Menor::new(val[0], val[2])}
-             | Expresion '>' Expresion                                                 {result = Mayor::new(val[0], val[2])}
-             | Expresion '<=' Expresion                                                {result = MenorOIgual::new(val[0], val[2])}
-             | Expresion '>=' Expresion                                                {result = MayorOIgual::new(val[0], val[2])}
-             | '#' Expresion                                                           {result = Inspeccion::new(val[1])}
-             | '(' Expresion ')'                                                       {result = val[1]}
-             | 'consttape'                                                             {result = val[0]}
-             | Expresion '&' Expresion                                                 {result = Concatenacion::new(val[0], val[2])}
+    Expresion: 'num'                                                                   {result = Entero::new(val[0]).set_line(val[0].line).set_column(val[0].column)                }
+             | 'ident'                                                                 {result = Variable::new(val[0]).set_line(val[0].line).set_column(val[0].column)              }
+             | Expresion '+' Expresion                                                 {result = Suma::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)          }
+             | Expresion '-' Expresion                                                 {result = Resta::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)         }
+             | Expresion '*' Expresion                                                 {result = Multiplicacion::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)}
+             | Expresion '/' Expresion                                                 {result = Division::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)      }
+             | Expresion '%' Expresion                                                 {result = Modulo::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)        }
+             | '-' Expresion =UMINUS                                                   {result = Menos_Unario::new(val[1]).set_line(val[0].line).set_column(val[0].column)          }
+             | 'true'                                                                  {result = True::new().set_line(val[0].line).set_column(val[0].column)                        }
+             | 'false'                                                                 {result = False::new().set_line(val[0].line).set_column(val[0].column)                       }
+             | '~' Expresion                                                           {result = Negacion::new(val[1]).set_line(val[0].line).set_column(val[0].column)              }
+             | Expresion 'and' Expresion                                               {result = Conjuncion::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)    }
+             | Expresion 'or' Expresion                                                {result = Disyuncion::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)    }
+             | Expresion '=' Expresion                                                 {result = Igual::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)         }
+             | Expresion '/=' Expresion                                                {result = Inequivalencia::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)}
+             | Expresion '<' Expresion                                                 {result = Menor::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)         }
+             | Expresion '>' Expresion                                                 {result = Mayor::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)         }
+             | Expresion '<=' Expresion                                                {result = MenorOIgual::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)   }
+             | Expresion '>=' Expresion                                                {result = MayorOIgual::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)   }
+             | '#' Expresion                                                           {result = Inspeccion::new(val[1]).set_line(val[0].line).set_column(val[0].column)            }
+             | '(' Expresion ')'                                                       {result = val[1]                             }
+             | 'consttape'                                                             {result = val[0]                             }
+             | Expresion '&' Expresion                                                 {result = Concatenacion::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column) }
              ;
 
 

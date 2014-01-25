@@ -34,6 +34,10 @@ class Token < PhraseS
   def to_s #Salida especificada
     "#{self.class.name}#{if self.class.name.eql?("TkIdent") then "(\"#{@text}\")" end}#{if self.class.name.eql?("TkNum") then "(#{@text})" end} "
   end
+
+  def self.name_tk
+    return self.name.sub(/Tk/, '')
+  end
 end
 
 #######################################
