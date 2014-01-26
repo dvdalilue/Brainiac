@@ -72,4 +72,15 @@ module Meta
   #    parametro y se setean a la instancia.
 
   #6 - Por ultimo se cambia el nombre de la clase al que se desea el llamador.
+  
+  # Palabras claves:
+  #
+  #   define_method
+  #   create_method
+  #   class_eval
+  #   instance_eval
+  #   instance_variable_set
+  #   instance_variable_get
+  #   send
+  ################################################################################
 end
