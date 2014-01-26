@@ -1,4 +1,5 @@
 #AST
+#Representacion del AST para crear todos las clases necesarias
 
 require_relative 'Meta'
 
@@ -51,6 +52,7 @@ $as_tree = [
                         ]]
            ]
 
+#Se Recorre el arbol, creando las clases
 def create_tree(father,tree)
   tree.each do |name|
     n = Meta::create_class(father, name[0], name[1])

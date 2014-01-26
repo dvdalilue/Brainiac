@@ -1,0 +1,13 @@
+declare x,y :: integer; b :: boolean execute
+	b := true;
+	y := 42;
+	for x from 1 to 10 do
+	    if b then 
+		x := 42
+	    else
+		x := -1
+	    done
+	done
+done
+
+

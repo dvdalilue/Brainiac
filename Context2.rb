@@ -10,6 +10,22 @@ class TipoError; def self.name_tk; 'desconocido' end; end
 #Redifinicion de las clases para anilisis de contexto
 #
 
+#
+# Todos son redefinidas con un metodo check, que verifica
+# los errores de contexto. Va recorriendo de izquierda a derecha.
+
+# Dependiendo de la clase, existen diferentes tipos de errores.
+
+# El attr_reader "type" en AST va a estar en todos, dado que es
+# el padre. Este atributo sirve para los errores de tipo. 
+
+# "type" es sintetizado, se hace check primero para ver que tipo es.
+# La informacion va de los hijos al padre.
+
+# Se usa la tabla de simbolos para guardar los identificadores y su tipo.
+
+#
+
 class AST
 
   attr_reader :line, :column, :type
@@ -70,14 +86,14 @@ class Asignacion
   def check(tabla)
     variable = tabla.find(@var.text)
     if variable.nil? then
-      $ErroresContexto << NoDeclarada::new(@line,
-                                           @column,
+      $ErroresContexto << NoDeclarada::new(@var.line,
+                                           @var.column,
                                            @var.text)
     else
       @value.check(tabla)
       unless variable[:tipo].eql? @value.type then
-        $ErroresContexto << ErrorDeTipoAsignacion::new(@line,
-                                                       @column,
+        $ErroresContexto << ErrorDeTipoAsignacion::new(@var.line,
+                                                       @var.column,
                                                        @value.type.name_tk,
                                                        @var.text,
                                                        variable[:tipo].name_tk)
@@ -127,8 +143,8 @@ class IteracionDId
   def check(tabla)
     variable = tabla.find(@identificador.text)
     if variable.nil? then
-      $ErroresContexto << NoDeclarada::new(@line,
-                                           @column,
+      $ErroresContexto << NoDeclarada::new(@identificador.line,
+                                           @identificador.column,
                                            @identificador.text)
     end
     @condicionA.check(tabla)
@@ -174,8 +190,8 @@ class ES
         
       end
       if variable.nil? then
-        $ErroresContexto << NoDeclarada::new(@line,
-                                             @column,
+        $ErroresContexto << NoDeclarada::new(@expresion.line,
+                                             @expresion.column,
                                              @expresion.text)
       else
         unless variable[:tipo].eql? TkBoolean or
@@ -239,8 +255,8 @@ class Variable
     variable = tabla.find(@var.text)
     if variable.nil? then
       @type = TipoError
-      $ErroresContexto << NoDeclarada::new(@line,
-                                           @column,
+      $ErroresContexto << NoDeclarada::new(@var.line,
+                                           @var.column,
                                            @var.text)
     else
       @type = variable[:tipo]
@@ -255,13 +271,13 @@ class ConstructorTape
     rescue ArgumentError
       variable = tabla.find(@length.text[1])
       if variable.nil? then
-        $ErroresContexto << NoDeclarada::new(@line,
-                                             @column,
+        $ErroresContexto << NoDeclarada::new(@length.line,
+                                             @length.column,
                                              @length.text)
       end
       unless TkInteger.eql? variable[:tipo] then
-        $ErroresContexto << ErrorDeTipoUnario::new(@line,
-                                                   @column,
+        $ErroresContexto << ErrorDeTipoUnario::new(@length.line,
+                                                   @length.column,
                                                    'CONSTRUCTOR_TAPE',
                                                    variable[:tipo].name_tk)
       end

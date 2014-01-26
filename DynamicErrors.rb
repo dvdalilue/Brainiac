@@ -20,7 +20,7 @@ class CintaMalConstruida < DynamicError
   end
   
   def to_s
-    "Error entre la línea #{@line} y columna #{@column}: Construccion errada de cinta, solo naturales(N)."
+    "Error entre la línea #{@line} y columna #{@column}: Construccion errada de cinta, solo numeros naturales(N)."
   end
 end
 
@@ -56,5 +56,17 @@ class EjecucionInvalida < DynamicError
 
   def to_s
     "Error entre la línea #{@line} y columna #{@column}: La ejecucion no puede efectuarse en la expresion de tipo \"#{@operacion}\"."
+  end
+end
+
+class VariableIneslastica < DynamicError
+  def initialize(line, column, nombre)
+    @line = line
+    @column = column
+    @nombre = nombre
+  end
+
+  def to_s
+    "Error entre la línea #{@line} y columna #{@column}: La variable \"#{@nombre}\" no puede cambiarse dentro del FOR."
   end
 end

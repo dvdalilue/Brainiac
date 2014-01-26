@@ -1,3 +1,7 @@
+#
+# Hash para la ejecucion, guarda la variable con su valor
+# ademas de atributo elastico(si se puede modificar)
+
 class ValueTable
   def initialize(padre = nil)
     @padre = padre
@@ -29,6 +33,11 @@ class ValueTable
     @padre.find(variable)
   end
 end
+
+#
+# Clase de para interaccion de las cintas, con todos los metodos
+# especificados.
+#
 
 class Band
 

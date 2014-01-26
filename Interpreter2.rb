@@ -2,6 +2,13 @@ require_relative 'Context2'
 require_relative 'DynamicErrors'
 require_relative 'Execution'
 
+#
+# Redifinicion de las clases del AST con un metodo
+# exec, para realizar la ejecucion.
+
+# ....
+#
+
 class Programa
   def exec
     @alcance.exec(ValueTable::new)
@@ -43,6 +50,9 @@ end
 
 class Asignacion
   def exec(tabla)
+    raise VariableIneslastica::new(@var.line,
+                                   @var.column,
+                                   @var.text) if tabla.find(@var.text)[:elastico] == false
     tabla.update(@var.text, @value.exec(tabla))
   end
 end
@@ -78,7 +88,7 @@ class IteracionDId
     variable = tabla.find(@identificador.text)
     i = @condicionA.exec(tabla)
     j = @condicionB.exec(tabla)
-    raise LimetesInvalidos::new(@line, @column) if i>j
+    raise LimetesInvalidos::new(@identificador.line, @identificador.column) if i>j
     variable[:valor] = i
     variable[:elastico] = false
     while i <= j do
@@ -105,6 +115,9 @@ end
 class ES
   def exec(tabla)
     if @operancion.class.eql?TkRead then
+      raise VariableIneslastica::new(@var.line,
+                                     @var.column,
+                                     @var.text) if tabla.find(@expresion.text)[:elastico] == false
       tabla.find(@expresion.text)[:valor] = STDIN.gets.chomp
     else
       salida = @expresion.exec(tabla)
@@ -171,7 +184,7 @@ end
 class Variable
   def exec(tabla)
     variable = tabla.find(@var.text)
-    raise NoInicializada::new(@line, @column, @var.text) if variable[:valor].nil?
+    raise NoInicializada::new(@var.line, @var.column, @var.text) if variable[:valor].nil?
     begin
       Integer(variable[:valor])
     rescue ArgumentError
@@ -190,7 +203,7 @@ class ConstructorTape
       variable = tabla.find(@length.text[1])
       len = variable[:valor]
     end
-    raise CintaMalConstruida::new(@line, @column) if len <= 0
+    raise CintaMalConstruida::new(@length.line, @length.column) if len <= 0
     Band::new(len)
   end
 end
