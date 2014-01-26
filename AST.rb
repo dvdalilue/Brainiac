@@ -43,7 +43,8 @@ $as_tree = [
                                               ['MenorOIgual', %w[opIzq opDer], []],
                                               ['MayorOIgual', %w[opIzq opDer], []],
                                               ['Concatenacion', %w[tape1 tape2], []],
-                                              ['Inspeccion', %w[tape], []]
+                                              ['Inspeccion', %w[tape], []],
+                                              ['ConstructorTape', %w[length], []]
                                              ]]
                         ]]
            ]

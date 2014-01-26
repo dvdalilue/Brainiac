@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-###############################
-#Definicion del Main del Lexer#
-###############################
+#################################
+#Definicion del Main de Brainiac#
+#################################
 
 require_relative 'Lexer'
 require_relative 'Parser'
@@ -29,23 +29,43 @@ def to_s_recursive(ast,prof)
 end
 
 def main
-  $ErroresContexto = []
-
   input = File::read(ARGV[0]) #Lectura de entrada en un string
   input.force_encoding 'ASCII-8BIT'
   lexer = Lexer::new input
-  begin
-    parser = Parser::new.parse(lexer) #Creacion de un lexer
-    parser.check
-    if $ErroresContexto.empty?
-      to_s_recursive(parser," ")
-    else
-      for e in $ErroresContexto
-        puts e
-      end
+  lex_error = false
+  goon = true
+  while (goon) do
+    begin
+      goon = lexer.lex_catch
+    rescue TypeError
+      lex_error = true
     end
-  rescue SyntacticError => se
-    puts se
+  end
+
+  if lex_error==true then
+    lexer.to_s
+  else
+    begin
+      parser = Parser::new.parse(Lexer::new input) #Creacion de un parser
+      
+      $ErroresContexto = []
+      
+      parser.check
+      unless $ErroresContexto.empty? then
+        #to_s_recursive(parser," ")
+        for e in $ErroresContexto
+          puts e
+        end
+      end
+
+      begin
+        parser.exec
+      rescue DynamicError => de 
+        puts de 
+      end
+    rescue SyntacticError => se
+      puts se
+    end
   end
 end
 

@@ -4,7 +4,7 @@ require_relative 'AST'
 require_relative 'ContextErrors'
 require_relative 'SymTable'
 
-class TipoError; end
+class TipoError; def self.name_tk; 'desconocido' end; end
 
 #
 #Redifinicion de las clases para anilisis de contexto
@@ -27,15 +27,16 @@ end
 
 class Programa
   def check
-    @attr_value[0][1].check(nil)
+    @attr_value[0][1].check(SymTable::new(nil))
   end
 end
 
 class Alcance
-  def check(padre)
-    tabla = SymTable::new(padre)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla) if @attr_value[0][1].empty?
+  def check(tabla)
+    unless @attr_value[0][1].class.eql? Array then
+      @attr_value[0][1].check(tabla)
+    end
+    @attr_value[1][1].check(tabla)
   end
 end
 
@@ -44,10 +45,6 @@ class Declaraciones
     for dec in @attr_value[0][1]
       dec.check(tabla)
     end
-  end
-
-  def empty?
-    return False
   end
 end
 
@@ -170,7 +167,7 @@ end
 
 class ES
   def check(tabla)
-    if @attr_value[0][1].eql?TkRead then
+    if @attr_value[0][1].class.eql?TkRead then
       variable = tabla.find(@attr_value[1][1].text)
       if variable.nil? then
         $ErroresContexto << NoDeclarada::new(@line,
@@ -189,18 +186,29 @@ class ES
       @attr_value[1][1].check(tabla)
       if TipoError.eql? @attr_value[1][1].type then
         $ErroresContexto << ErrorDeTipoUnario::new(@line,
-                                             @column,
-                                             'READ',
-                                             'no declarada')
+                                                   @column,
+                                                   'WRITE',
+                                                   'no declarada')
       end
+    end
+  end
+end
+
+class Ejecucion
+  def check(tabla)
+    @attr_value[1][1].check(tabla)
+    unless TkTape.eql? @attr_value[1][1].type then
+      $ErroresContexto << ErrorDeTipoUnario::new(@line,
+                                                 @column,
+                                                 'EJECUCION',
+                                                 @attr_value[1][1].type.name_tk)
     end
   end
 end
 
 class SecInterna
   def check(tabla)
-    tabla2 = SymTable::new(tabla)
-    @attr_value[0][1].check(tabla2)
+    @attr_value[0][1].check(SymTable::new(tabla))
   end
 end
 
@@ -233,6 +241,28 @@ class Variable
     else
       @type = variable[:tipo]
     end
+  end
+end
+
+class ConstructorTape
+  def check(tabla)
+    begin
+      Integer(@attr_value[0][1].text[1])
+    rescue ArgumentError
+      variable = tabla.find(@attr_value[0][1].text[1])
+      if variable.nil? then
+        $ErroresContexto << NoDeclarada::new(@line,
+                                             @column,
+                                             @attr_value[0][1].text)
+      end
+      unless TkInteger.eql? variable[:tipo] then
+        $ErroresContexto << ErrorDeTipoUnario::new(@line,
+                                                   @column,
+                                                   'CONSTRUCTOR_TAPE',
+                                                   variable[:tipo].name_tk)
+      end
+    end
+    @type = TkTape
   end
 end
 
@@ -409,13 +439,13 @@ end
 class Inspeccion
   def check(tabla)
     @attr_value[0][1].check(tabla)
-    unless TkTape.eql? @attr_value[0][1].type then
+    unless [TkConstructorTape, TkTape].include? @attr_value[0][1].type then
       $ErroresContexto << ErrorDeTipoUnario::new(@line,
                                                  @column,
                                                  'INSPECCION',
                                                  @attr_value[0][1].type.name_tk)
     end
-    @type = TkTape
+    @type = TkInteger
   end
 end
 
@@ -497,8 +527,8 @@ class Concatenacion
   def check(tabla)
     @attr_value[0][1].check(tabla)
     @attr_value[1][1].check(tabla)
-    unless TkTape.eql? @attr_value[0][1].type and
-        TkTape.eql? @attr_value[1][1].type then
+    unless [TkConstructorTape, TkTape].include? @attr_value[0][1].type and
+        [TkConstructorTape, TkTape].include? @attr_value[1][1].type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'CONCATENACION',

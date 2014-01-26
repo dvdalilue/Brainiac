@@ -158,7 +158,7 @@ rule
              | Expresion '>=' Expresion                                                {result = MayorOIgual::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column)   }
              | '#' Expresion                                                           {result = Inspeccion::new(val[1]).set_line(val[0].line).set_column(val[0].column)            }
              | '(' Expresion ')'                                                       {result = val[1]                             }
-             | 'consttape'                                                             {result = val[0]                             }
+             | 'consttape'                                                             {result = ConstructorTape::new(val[0]).set_line(val[0].line).set_column(val[0].column)       }
              | Expresion '&' Expresion                                                 {result = Concatenacion::new(val[0], val[2]).set_line(val[0].line).set_column(val[1].column) }
              ;
 
@@ -166,7 +166,7 @@ rule
 ---- header ----
 
 require_relative 'Lexer'
-require_relative 'Context'
+require_relative 'Interpreter'
 
 class SyntacticError < RuntimeError
 
@@ -195,10 +195,6 @@ end
       @yydebug = true
       @lexer = lexer
       @tokens = []
-      begin
-        ast = do_parse
-        return ast
-      rescue LexicographError => e
-        puts e
-      end
+      ast = do_parse
+      return ast
     end
