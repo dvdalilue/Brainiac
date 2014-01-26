@@ -74,6 +74,5 @@ class Lexer
 
   def to_s #Dependiendo de si hubo errores o no, cambia la salida
     (if @errors.empty? then @tokens else @errors end).map { |tk| puts tk.to_s }
-    #(if !@errors.empty? then @errors end).map { |tk| puts tk.to_s }
   end
 end

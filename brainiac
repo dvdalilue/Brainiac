@@ -41,7 +41,6 @@ def main
       lex_error = true
     end
   end
-
   if lex_error==true then
     lexer.to_s
   else
@@ -56,12 +55,12 @@ def main
         for e in $ErroresContexto
           puts e
         end
-      end
-
-      begin
-        parser.exec
-      rescue DynamicError => de 
-        puts de 
+      else
+        begin
+          parser.exec
+        rescue DynamicError => de 
+          puts de 
+        end
       end
     rescue SyntacticError => se
       puts se

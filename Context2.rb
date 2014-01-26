@@ -1,6 +1,6 @@
 module Brainiac end
 
-require_relative 'AST'
+require_relative 'AST2'
 require_relative 'ContextErrors'
 require_relative 'SymTable'
 
@@ -27,22 +27,22 @@ end
 
 class Programa
   def check
-    @attr_value[0][1].check(SymTable::new(nil))
+    @alcance.check(SymTable::new(nil))
   end
 end
 
 class Alcance
   def check(tabla)
-    unless @attr_value[0][1].class.eql? Array then
-      @attr_value[0][1].check(tabla)
+    unless @declaraciones.class.eql? Array then
+      @declaraciones.check(tabla)
     end
-    @attr_value[1][1].check(tabla)
+    @secuenciacion.check(tabla)
   end
 end
 
 class Declaraciones
   def check(tabla)
-    for dec in @attr_value[0][1]
+    for dec in @lista_declaraciones
       dec.check(tabla)
     end
   end
@@ -50,8 +50,8 @@ end
 
 class Declaracion
   def check(tabla)
-    for var in @attr_value[0][1]
-      tabla.insert(var.attr_value[0][1], @attr_value[1][1].class)
+    for var in @lista
+      tabla.insert(var.var, @tipo.class)
     end
   rescue RedefineError => r
     $ErroresContexto << r
@@ -60,7 +60,7 @@ end
 
 class Instrucciones
   def check(tabla)
-    for inst in @attr_value[0][1]
+    for inst in @instrucciones
       inst.check(tabla)
     end
   end
@@ -68,18 +68,18 @@ end
 
 class Asignacion
   def check(tabla)
-    variable = tabla.find(@attr_value[0][1].text)
+    variable = tabla.find(@var.text)
     if variable.nil? then
       $ErroresContexto << NoDeclarada::new(@line,
                                            @column,
-                                           @attr_value[0][1].text)
+                                           @var.text)
     else
-      @attr_value[1][1].check(tabla)
-      unless variable[:tipo].eql? @attr_value[1][1].type then
+      @value.check(tabla)
+      unless variable[:tipo].eql? @value.type then
         $ErroresContexto << ErrorDeTipoAsignacion::new(@line,
                                                        @column,
-                                                       @attr_value[1][1].type.name_tk,
-                                                       @attr_value[0][1].text,
+                                                       @value.type.name_tk,
+                                                       @var.text,
                                                        variable[:tipo].name_tk)
       end
     end
@@ -88,91 +88,95 @@ end
 
 class CondicionalIf
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    unless TkBoolean.eql? @attr_value[0][1].type then
+    @condicion.check(tabla)
+    unless TkBoolean.eql? @condicion.type then
       $ErroresContexto << ErrorCondicionCondicional::new(@line,
                                                          @column,
-                                                         @attr_value[0][1].type.name_tk)
+                                                         @condicion.type.name_tk)
     end
-    @attr_value[1][1].check(tabla)
+    @exito.check(tabla)
   end
 end
 
 class CondicionalElse
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    unless TkBoolean.eql?(@attr_value[0][1].type) then
+    @condicion.check(tabla)
+    unless TkBoolean.eql? @condicion.type then
       $ErroresContexto << ErrorCondicionCondicional::new(@line,
                                                          @column,
-                                                         @attr_value[0][1].type.name_tk)
+                                                         @condicion.type.name_tk)
     end
-    @attr_value[1][1].check(tabla)
-    @attr_value[2][1].check(tabla)
+    @exito.check(tabla)
+    @fracaso.check(tabla)
   end
 end
 
 class IteracionI
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    unless TkBoolean.eql?(@attr_value[0][1].type) then
+    @condicion.check(tabla)
+    unless TkBoolean.eql? @condicion.type then
       $ErroresContexto << ErrorCondicionIteracion::new(@line,
                                                        @column,
-                                                       @attr_value[0][1].type.name_tk)
+                                                       @condicion.type.name_tk)
     end
-    @attr_value[1][1].check(tabla)
+    @instruccion.check(tabla)
   end
 end
 
 class IteracionDId
   def check(tabla)
-    variable = tabla.find(@attr_value[0][1].text)
+    variable = tabla.find(@identificador.text)
     if variable.nil? then
       $ErroresContexto << NoDeclarada::new(@line,
                                            @column,
-                                           @attr_value[0][1].text)
+                                           @identificador.text)
     end
-    @attr_value[1][1].check(tabla)
-    @attr_value[2][1].check(tabla)
-    unless TkInteger.eql? @attr_value[1][1].type then
+    @condicionA.check(tabla)
+    @condicionB.check(tabla)
+    unless TkInteger.eql? @condicionA.type then
       $ErroresContexto << ErrorLimiteIteracion::new(@line,
                                                     @column,
-                                                    @attr_value[1][1].type.name_tk)
+                                                    @condicionA.type.name_tk)
     end
-    unless TkInteger.eql?@attr_value[2][1].type then
+    unless TkInteger.eql?@condicionB.type then
       $ErroresContexto << ErrorLimiteIteracion::new(@line,
                                                     @column,
-                                                    @attr_value[2][1].type.name_tk)
+                                                    @condicionB.type.name_tk)
     end
-    @attr_value[3][1].check(tabla)
+    @instruccion.check(tabla)
   end
 end
 
 class IteracionDExpA
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql?(@attr_value[0][1].type) then
+    @condicionA.check(tabla)
+    @condicionB.check(tabla)
+    unless TkInteger.eql? @condicionA.type then
       $ErroresContexto << ErrorLimiteIteracion::new(@line,
                                                     @column,
-                                                    @attr_value[1][1].type.name_tk)
+                                                    @condicionA.type.name_tk)
     end
-    unless TkInteger.eql? @attr_value[1][1].type then
+    unless TkInteger.eql?@condicionB.type then
       $ErroresContexto << ErrorLimiteIteracion::new(@line,
                                                     @column,
-                                                    @attr_value[2][1].type.name_tk)
+                                                    @condicionB.type.name_tk)
     end
-    @attr_value[2][1].check(tabla)
+    @instruccion.check(tabla)
   end
 end
 
 class ES
   def check(tabla)
-    if @attr_value[0][1].class.eql?TkRead then
-      variable = tabla.find(@attr_value[1][1].text)
+    if @operancion.class.eql? TkRead then
+      begin
+        variable = tabla.find(@expresion.text)
+      rescue NoMethodError
+        
+      end
       if variable.nil? then
         $ErroresContexto << NoDeclarada::new(@line,
                                              @column,
-                                             @attr_value[1][1].text)
+                                             @expresion.text)
       else
         unless variable[:tipo].eql? TkBoolean or
             variable[:tipo].eql? TkInteger then
@@ -183,8 +187,8 @@ class ES
         end
       end
     else
-      @attr_value[1][1].check(tabla)
-      if TipoError.eql? @attr_value[1][1].type then
+      @expresion.check(tabla)
+      if TipoError.eql? @expresion.type then
         $ErroresContexto << ErrorDeTipoUnario::new(@line,
                                                    @column,
                                                    'WRITE',
@@ -196,19 +200,19 @@ end
 
 class Ejecucion
   def check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkTape.eql? @attr_value[1][1].type then
+    @expresion.check(tabla)
+    unless TkTape.eql? @expresion.type then
       $ErroresContexto << ErrorDeTipoUnario::new(@line,
                                                  @column,
                                                  'EJECUCION',
-                                                 @attr_value[1][1].type.name_tk)
+                                                 @expresion.type.name_tk)
     end
   end
 end
 
 class SecInterna
   def check(tabla)
-    @attr_value[0][1].check(SymTable::new(tabla))
+    @alcance.check(SymTable::new(tabla))
   end
 end
 
@@ -232,12 +236,12 @@ end
 
 class Variable
   def check(tabla)
-    variable = tabla.find(@attr_value[0][1].text)
+    variable = tabla.find(@var.text)
     if variable.nil? then
       @type = TipoError
       $ErroresContexto << NoDeclarada::new(@line,
                                            @column,
-                                           @attr_value[0][1].text)
+                                           @var.text)
     else
       @type = variable[:tipo]
     end
@@ -247,13 +251,13 @@ end
 class ConstructorTape
   def check(tabla)
     begin
-      Integer(@attr_value[0][1].text[1])
+      Integer(@length.text[1])
     rescue ArgumentError
-      variable = tabla.find(@attr_value[0][1].text[1])
+      variable = tabla.find(@length.text[1])
       if variable.nil? then
         $ErroresContexto << NoDeclarada::new(@line,
                                              @column,
-                                             @attr_value[0][1].text)
+                                             @length.text)
       end
       unless TkInteger.eql? variable[:tipo] then
         $ErroresContexto << ErrorDeTipoUnario::new(@line,
@@ -268,15 +272,15 @@ end
 
 class Suma
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'SUMA',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkInteger
   end
@@ -284,15 +288,15 @@ end
 
 class Resta
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'RESTA',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkInteger
   end
@@ -300,15 +304,15 @@ end
 
 class Multiplicacion
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+   unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'MULTIPLICACION',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkInteger
   end
@@ -316,15 +320,15 @@ end
 
 class Division
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'DIVISION',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkInteger
   end
@@ -332,15 +336,15 @@ end
 
 class Modulo
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'MODULO',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkInteger
   end
@@ -348,15 +352,15 @@ end
 
 class Menor
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'MENOR',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkBoolean
   end
@@ -364,15 +368,15 @@ end
 
 class Mayor
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'MAYOR',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkBoolean
   end
@@ -380,15 +384,15 @@ end
 
 class MenorOIgual
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'MenorOIgual',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkBoolean
   end
@@ -396,15 +400,15 @@ end
 
 class MayorOIgual
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'MayorOIgual',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkBoolean
   end
@@ -412,12 +416,12 @@ end
 
 class Menos_Unario
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    unless TkInteger.eql? @attr_value[0][1].type then
+    @op.check(tabla)
+    unless TkInteger.eql? @op.type then
       $ErroresContexto << ErrorDeTipoUnario::new(@line,
                                                  @column,
                                                  'MENOS UNARIO',
-                                                 @attr_value[0][1].type.name_tk)
+                                                 @op.type.name_tk)
     end
     @type = TkInteger
   end
@@ -425,12 +429,12 @@ end
 
 class Negacion
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    unless TkBoolean.eql? @attr_value[0][1].type then
+    @op.check(tabla)
+    unless TkBoolean.eql? @op.type then
       $ErroresContexto << ErrorDeTipoUnario::new(@line,
                                                  @column,
                                                  'NEGACION',
-                                                 @attr_value[0][1].type.name_tk)
+                                                 @op.type.name_tk)
     end
     @type = TkBoolean
   end
@@ -438,12 +442,12 @@ end
 
 class Inspeccion
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    unless [TkConstructorTape, TkTape].include? @attr_value[0][1].type then
+    @tape.check(tabla)
+    unless [TkConstructorTape, TkTape].include? @tape.type then
       $ErroresContexto << ErrorDeTipoUnario::new(@line,
                                                  @column,
                                                  'INSPECCION',
-                                                 @attr_value[0][1].type.name_tk)
+                                                 @tape.type.name_tk)
     end
     @type = TkInteger
   end
@@ -451,15 +455,15 @@ end
 
 class Conjuncion
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkBoolean.eql? @attr_value[0][1].type and 
-        TkBoolean.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkBoolean.eql? @opIzq.type and 
+        TkBoolean.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'CONJUNCION',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkBoolean
   end
@@ -467,15 +471,15 @@ end
 
 class Disyuncion
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless TkBoolean.eql? @attr_value[0][1].type and 
-        TkBoolean.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    unless TkBoolean.eql? @opIzq.type and 
+        TkBoolean.eql? @opDer.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'DISYUNCION',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
     end
     @type = TkBoolean
   end
@@ -483,20 +487,20 @@ end
 
 class Igual
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    if TkBoolean.eql? @attr_value[0][1].type and 
-        TkBoolean.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    if TkBoolean.eql? @opIzq.type and 
+        TkBoolean.eql? @opDer.type then
       @type = TkBoolean
-    elsif TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    elsif TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       @type = TkBoolean
     else
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'IGUAL',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
       @type = TipoError
     end
   end
@@ -504,20 +508,20 @@ end
 
 class Inequivalencia
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    if TkBoolean.eql? @attr_value[0][1].type and 
-        TkBoolean.eql? @attr_value[1][1].type then
+    @opIzq.check(tabla)
+    @opDer.check(tabla)
+    if TkBoolean.eql? @opIzq.type and 
+        TkBoolean.eql? @opDer.type then
       @type = TkBoolean
-    elsif TkInteger.eql? @attr_value[0][1].type and 
-        TkInteger.eql? @attr_value[1][1].type then
+    elsif TkInteger.eql? @opIzq.type and 
+        TkInteger.eql? @opDer.type then
       @type = TkBoolean
     else
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
-                                           'INEQUIVALENCIA',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           'INEQIVALENCIA',
+                                           @opIzq.type.name_tk,
+                                           @opDer.type.name_tk)
       @type = TipoError
     end
   end
@@ -525,15 +529,15 @@ end
 
 class Concatenacion
   def check(tabla)
-    @attr_value[0][1].check(tabla)
-    @attr_value[1][1].check(tabla)
-    unless [TkConstructorTape, TkTape].include? @attr_value[0][1].type and
-        [TkConstructorTape, TkTape].include? @attr_value[1][1].type then
+    @tape1.check(tabla)
+    @tape2.check(tabla)
+    unless [TkConstructorTape, TkTape].include? @tape1.type and
+        [TkConstructorTape, TkTape].include? @tape2.type then
       $ErroresContexto << ErrorDeTipo::new(@line,
                                            @column,
                                            'CONCATENACION',
-                                           @attr_value[0][1].type.name_tk,
-                                           @attr_value[1][1].type.name_tk)
+                                           @tape1.type.name_tk,
+                                           @tape2.type.name_tk)
     end
     @type = TkTape
   end

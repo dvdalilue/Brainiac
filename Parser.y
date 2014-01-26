@@ -166,7 +166,7 @@ rule
 ---- header ----
 
 require_relative 'Lexer'
-require_relative 'Interpreter'
+require_relative 'Interpreter2'
 
 class SyntacticError < RuntimeError
 
